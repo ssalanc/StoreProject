@@ -1,0 +1,38 @@
+{% extends "partials/base.html" %}
+{% load static %}
+{% block title %} Register {% endblock%}
+{% block content%}
+
+<body>
+    <div class="container py-5">
+        <div class="row py-5">
+            <form class="col-md-6 m-auto bg-light p-5 rounded" method="post">
+                {% csrf_token %}
+                <h2 class="text-center mb-4">Register</h2>
+
+                {% for field in form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg px-4">Sign Up</button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'security:login' %}">Already have an account? Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+{%endblock%}
