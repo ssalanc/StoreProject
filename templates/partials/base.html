@@ -15,27 +15,129 @@
     <link rel="stylesheet" href="{% static 'css/fontawesome.min.css' %}">
     <!-- Load map styles -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <!-- Bootstrap JS y CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 
-    <!-- Pie de Página -->
+    <!-- Navbar -->
     {% include 'partials/navbar.html' %}
-
+ 
+    <!-- Contenido Principal -->
     <main class="transition-all duration-300">
         {% block content %}
         {% endblock %}
     </main>
 
+    <!-- Footer -->
     {% include 'partials/footer.html' %}
 
     <!-- Scripts -->
+    <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/templatemo.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    
     <script>
-        <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
-        <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <script src="{% static 'js/templatemo.js' %}"></script>
-        <script src="{% static 'js/custom.js' %}"></script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let switchElement = document.getElementById("colorSwitch");
+            let switchLabel = document.getElementById("switchLabel");
+            let toastEl = document.getElementById("modeToast");
+            let toastMessage = document.getElementById("toastMessage");
+            let toastBootstrap = new bootstrap.Toast(toastEl);
+        
+            // Comprobar si hay un estado guardado en localStorage
+            if (switchElement) {
+                let savedState = localStorage.getItem("editMode");
+                if (savedState === "on") {
+                    switchElement.checked = true;
+                    activarModoEdicion();
+                }
+        
+                switchElement.addEventListener("change", function() {
+                    if (this.checked) {
+                        activarModoEdicion();
+                    } else {
+                        desactivarModoEdicion();
+                    }
+                });
+            }
+        
+            function activarModoEdicion() {
+                document.body.classList.add("edit-mode");
+                document.body.classList.remove("view-mode");
+                switchLabel.textContent = "Mood Edition";
+                switchLabel.style.color = "white";
+                toastMessage.textContent = "Mood Edition";
+                localStorage.setItem("editMode", "on"); // Guarda estado
+                toastBootstrap.show();
+            }
+        
+            function desactivarModoEdicion() {
+                document.body.classList.add("view-mode");
+                document.body.classList.remove("edit-mode");
+                switchLabel.textContent = "Mood Edition";
+                switchLabel.style.color = "white";
+                toastMessage.textContent = "Display mode activated";
+                localStorage.setItem("editMode", "off"); // Guarda estado
+                toastBootstrap.show();
+            }
+        });
     </script>
+
+
+    <!-- Switch flotante -->
+    <div class="switch-container">
+        {% if request.user.email == "susisalan@gmail.com" %}
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="colorSwitch">
+            <label class="form-check-label fw-bold" for="colorSwitch" id="switchLabel">Mood edition</label>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Toast de Notificación -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1052">
+        <div id="modeToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">
+                    <!-- Mensaje dinámico aquí -->
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSS para hacer que el switch sea flotante -->
+    <style>
+        .switch-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 1000; /* Para que no bloquee otros elementos */
+            width: auto; /* Evita que se expanda innecesariamente */
+            max-width: 200px; /* Evita que se haga muy grande */
+            height: 45px; /* 🔥 Establecemos un alto específico 🔥 */
+            overflow: hidden; /* Asegura que no crezca más de lo necesario */
+            pointer-events: auto; /* Asegura que sea interactivo */
+        }
+
+        .dropdown-menu {
+            z-index: 1052 !important;
+        }
+        
+    </style>
 
 </body>             
 </html>

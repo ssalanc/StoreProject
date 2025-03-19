@@ -45,7 +45,7 @@ def register_view(request):
             user = form.save(commit=False)
             user.save()
             login(request, user)
-            messages.success(request, "¡Registro exitoso! Bienvenido a Zay Shop.")
+            messages.success(request, "¡Registro exitoso! Bienvenido a LEO ECU.")
             return redirect('security:dashboard')
         else:
             for field, errors in form.errors.items():
