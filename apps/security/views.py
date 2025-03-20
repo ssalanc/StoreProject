@@ -5,7 +5,9 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .forms import RegisterForm, LoginForm
 
 class CustomLoginView(LoginView):
@@ -99,4 +101,12 @@ def profile_view(request):
 
 
 
+
+@csrf_exempt  # Solo en desarrollo, en producción usa CSRF Token
+def save_switch_state(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        estado = data.get("estado")
+        return JsonResponse({"estado": estado, "mensaje": "Estado guardado correctamente"})
+    return JsonResponse({"error": "Método no permitido"}, status=405)
 

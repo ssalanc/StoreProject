@@ -40,54 +40,69 @@
     <script src="{% static 'js/templatemo.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
 
-    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let switchElement = document.getElementById("colorSwitch");
-            let switchLabel = document.getElementById("switchLabel");
-            let toastEl = document.getElementById("modeToast");
-            let toastMessage = document.getElementById("toastMessage");
-            let toastBootstrap = new bootstrap.Toast(toastEl);
-        
-            // Comprobar si hay un estado guardado en localStorage
-            if (switchElement) {
-                let savedState = localStorage.getItem("editMode");
-                if (savedState === "on") {
-                    switchElement.checked = true;
-                    activarModoEdicion();
-                }
-        
-                switchElement.addEventListener("change", function() {
-                    if (this.checked) {
-                        activarModoEdicion();
-                    } else {
-                        desactivarModoEdicion();
-                    }
-                });
+            let imageButton = document.getElementById("imageButton");
+            let imageUpload = document.getElementById("imageUpload");
+            let imageButtonLi = document.getElementById("imageButtonLi");
+            
+            // Función para actualizar el estado en el servidor
+            function save_switch_state(estado) {
+                fetch("/save-switch-state/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ estado: estado })
+                })
+                .catch(error => console.error("Error al guardar el estado:", error));
             }
         
-            function activarModoEdicion() {
-                document.body.classList.add("edit-mode");
-                document.body.classList.remove("view-mode");
-                switchLabel.textContent = "Mood Edition";
-                switchLabel.style.color = "white";
-                toastMessage.textContent = "Mood Edition";
-                localStorage.setItem("editMode", "on"); // Guarda estado
-                toastBootstrap.show();
-            }
-        
-            function desactivarModoEdicion() {
-                document.body.classList.add("view-mode");
-                document.body.classList.remove("edit-mode");
-                switchLabel.textContent = "Mood Edition";
-                switchLabel.style.color = "white";
-                toastMessage.textContent = "Display mode activated";
-                localStorage.setItem("editMode", "off"); // Guarda estado
-                toastBootstrap.show();
-            }
+            // Verificar estado guardado en localStorage
+            let savedState = localStorage.getItem("editMode");
+            let switchActivado = savedState === "on";
+            switchElement.checked = switchActivado;
+            
+            // Mostrar u ocultar el botón de imagen según el estado del switch
+            imageButtonLi.style.display = switchActivado ? "block" : "none";
+            
+            // Configurar el botón de imagen
+            imageButton.addEventListener("click", function(e) {
+                e.preventDefault();
+                imageUpload.click();
+            });
+            
+            // Evento para cambiar el estado del switch
+            switchElement.addEventListener("change", function() {
+                let isChecked = this.checked;
+                imageButtonLi.style.display = isChecked ? "block" : "none";
+                localStorage.setItem("editMode", isChecked ? "on" : "off");
+                save_switch_state(isChecked);
+            });
         });
     </script>
 
+    function activarModoEdicion(showToast = true) {
+        document.body.classList.add("edit-mode");
+        document.body.classList.remove("view-mode");
+        switchLabel.textContent = "Mood Edition";
+        switchLabel.style.color = "white";
+        toastMessage.textContent = "Mood Edition";
+        localStorage.setItem("editMode", "on");
+        if (showToast) toastBootstrap.show();
+    }
+
+    function desactivarModoEdicion(showToast = true) {
+        document.body.classList.add("view-mode");
+        document.body.classList.remove("edit-mode");
+        switchLabel.textContent = "Mood Edition";
+        switchLabel.style.color = "white";
+        toastMessage.textContent = "Display mode activated";
+        localStorage.setItem("editMode", "off");
+        if (showToast) toastBootstrap.show();
+    }
 
     <!-- Switch flotante -->
     <div class="switch-container">
@@ -99,19 +114,15 @@
         {% endif %}
     </div>
 
-    <!-- Toast de Notificación -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1052">
         <div id="modeToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body" id="toastMessage">
-                    <!-- Mensaje dinámico aquí -->
-                </div>
+                <div class="toast-body" id="toastMessage"></div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
-    <!-- CSS para hacer que el switch sea flotante -->
     <style>
         .switch-container {
             position: fixed;
@@ -125,18 +136,18 @@
             gap: 8px;
             color: white;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-            z-index: 1000; /* Para que no bloquee otros elementos */
-            width: auto; /* Evita que se expanda innecesariamente */
-            max-width: 200px; /* Evita que se haga muy grande */
-            height: 45px; /* 🔥 Establecemos un alto específico 🔥 */
-            overflow: hidden; /* Asegura que no crezca más de lo necesario */
-            pointer-events: auto; /* Asegura que sea interactivo */
+            z-index: 1000;
+            width: auto;
+            max-width: 200px;
+            height: 40px;
+            overflow: hidden;
+            pointer-events: auto;
         }
 
         .dropdown-menu {
             z-index: 1052 !important;
         }
-        
+
     </style>
 
 </body>             

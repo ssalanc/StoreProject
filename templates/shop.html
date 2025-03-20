@@ -72,7 +72,11 @@
                                     <ul class="list-unstyled">
                                         <li><a class="btn btn-success text-white" href="security:favorites"><i class="far fa-heart"></i></a></li>
                                         <li><a class="btn btn-success text-white mt-2" href=""><i class="far fa-eye"></i></a></li>
-                                        
+                                        <!-- Opción para subir imagen-->
+                                        <li id="imageButtonLi" style="display: none;">
+                                            <a class="btn btn-success text-white mt-2" href="#" id="imageButton"><i class="far fa-image"></i></a>
+                                            <input type="file" id="imageUpload" style="display: none;" accept="image/*">
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -98,6 +102,12 @@
                                     </li>
                                 </ul>
                                 <p class="text-center mb-0">$250.00</p>
+
+                                <!-- Opción para subir imagen (oculta por defecto) -->
+                                <div id="uploadContainer" style="display: none; margin-top: 10px;">
+                                    <label for="imageUpload" class="form-label">Subir imagen:</label>
+                                    <input type="file" id="imageUpload" class="form-control">
+                                </div>
                             </div>
                         </div>
                     </div>
